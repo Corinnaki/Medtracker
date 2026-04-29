@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Medtracker — Myasthenia Gravis medication PWA",
   "scripts": {
-    "build": "echo 'No build step — static site'",
+    "start": "echo 'No build step — static site'",
+    "build": "echo 'No build step - static site'",
     "postinstall": "cd netlify/functions && npm install"
   },
   "engines": {
