@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="theme-color" content="#3a9e8d"/>
+<title>Medtracker</title>
+<link rel="manifest" href="/manifest.json"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#f7f2ea;--cream2:#ede7db;--cream3:#ddd5c6;
+  --navy:#1d3461;--navy2:#2a4a8a;--navy-pale:#eef2fa;
+  --teal:#3a9e8d;--teal2:#2d8070;--teal3:#1f6358;--teal-pale:#e4f4f1;
+  --rose:#d96b6b;--rose2:#c05252;--rose-pale:#fdf0f0;
+  --safe:#2d8070;--safe-pale:#e4f4f1;
+  --amber:#b87222;--amber-pale:#fef4e2;
+  --white:var(--cream);
+  --r-card:18px;--r-sm:10px;--r-btn:12px;
+  --shadow-sm:0 1px 4px rgba(29,52,97,.06),0 2px 12px rgba(29,52,97,.07);
+  --shadow-md:0 2px 8px rgba(29,52,97,.07),0 6px 24px rgba(29,52,97,.09);
+  --nav-h:72px;--header-h:76px;
+}
+html{font-size:19px;-webkit-text-size-adjust:100%}
+body{
+  font-family:'DM Sans',system-ui,sans-serif;
+  background:var(--cream);color:var(--navy);min-height:100vh;
+  display:flex;flex-direction:column;
+  padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));
+}
+
+/* Header */
+header{
+  position:sticky;top:0;z-index:20;background:var(--cream);
+  border-bottom:1px solid var(--cream2);padding:0 1.25rem;
+  height:var(--header-h);display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 1px 0 var(--cream2),0 2px 16px rgba(29,52,97,.06);
+}
+.header-inner{display:flex;align-items:center;gap:.75rem}
+.logo-mark{width:40px;height:40px;flex-shrink:0}
+.logo-text{display:flex;flex-direction:column;gap:1px}
+.logo-name{font-family:'DM Serif Display',Georgia,serif;font-size:1.45rem;font-weight:400;color:var(--navy);letter-spacing:-.01em;line-height:1}
+.logo-tagline{font-size:.72rem;font-weight:500;color:var(--teal2);letter-spacing:.03em;text-transform:uppercase}
+.header-date{font-size:.8rem;font-weight:500;color:#8a9bb5;text-align:right;line-height:1.4}
+
+/* Bottom nav */
+nav{
+  position:fixed;bottom:0;left:0;right:0;z-index:30;
+  height:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  background:var(--cream);border-top:1px solid var(--cream2);
+  display:flex;box-shadow:0 -2px 20px rgba(29,52,97,.08);
+}
+nav button{
+  flex:1;border:none;background:none;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:.28rem;padding:.5rem .25rem;
+  font-family:'DM Sans',sans-serif;font-size:.72rem;font-weight:600;letter-spacing:.02em;
+  color:#9aabbf;cursor:pointer;transition:color .18s;
+  -webkit-tap-highlight-color:transparent;
+}
+nav button .nav-icon{
+  width:26px;height:26px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .18s,transform .12s;
+}
+nav button:active .nav-icon{transform:scale(.88)}
+nav button[data-tab="today"].active{color:var(--teal2)}
+nav button[data-tab="today"].active .nav-icon{background:var(--teal-pale)}
+nav button[data-tab="medications"].active{color:var(--navy)}
+nav button[data-tab="medications"].active .nav-icon{background:var(--navy-pale)}
+nav button[data-tab="interactions"].active{color:var(--navy)}
+nav button[data-tab="interactions"].active .nav-icon{background:var(--navy-pale)}
+nav button[data-tab="settings"].active{color:var(--navy)}
+nav button[data-tab="settings"].active .nav-icon{background:var(--navy-pale)}
+
+/* Main */
+main{flex:1;padding:1.4rem 1.1rem 1rem;max-width:600px;width:100%;margin:0 auto}
+.tab-panel{display:none}.tab-panel.active{display:block}
+
+/* Page title */
+.page-title{
+  font-family:'DM Serif Display',Georgia,serif;font-size:1.7rem;font-weight:400;
+  color:var(--navy);margin-bottom:1.1rem;letter-spacing:-.02em;line-height:1.2;
+}
+.page-title span{color:var(--teal)}
+
+/* Today meta */
+.today-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem}
+.today-date-label{font-size:.85rem;font-weight:600;color:var(--teal2);letter-spacing:.01em}
+.dose-progress{font-size:.82rem;font-weight:600;color:#8a9bb5;background:var(--cream2);border-radius:20px;padding:.2rem .75rem}
+
+/* Banners */
+.banner{
+  border-radius:var(--r-sm);padding:.85rem 1rem;margin-bottom:.9rem;
+  font-size:.88rem;font-weight:500;display:flex;align-items:flex-start;gap:.65rem;line-height:1.55;
+}
+.banner.warn{background:var(--amber-pale);color:var(--amber);border-left:3px solid var(--amber)}
+.banner.danger{background:var(--rose-pale);color:var(--rose2);border-left:3px solid var(--rose)}
+.banner.info{background:var(--teal-pale);color:var(--teal3);border-left:3px solid var(--teal)}
+.banner.hidden{display:none}
+.banner-icon{flex-shrink:0;font-size:1rem;margin-top:.05rem}
+
+/* Cards */
+.card{background:var(--cream2);border:1px solid var(--cream3);border-radius:var(--r-card);padding:1.25rem;margin-bottom:1rem;box-shadow:var(--shadow-sm)}
+.card-flush{padding:0;overflow:hidden}
+
+/* Section head */
+.section-head{
+  font-size:.8rem;font-weight:700;color:#8a9bb5;
+  text-transform:uppercase;letter-spacing:.09em;
+  margin-bottom:1rem;padding-bottom:.65rem;border-bottom:1px solid var(--cream2);
+  display:flex;align-items:center;gap:.5rem;
+}
+.section-head svg{width:15px;height:15px;flex-shrink:0;opacity:.7}
+
+/* Dose items */
+.dose-list{list-style:none;display:flex;flex-direction:column;gap:.55rem}
+.dose-item{
+  display:flex;align-items:center;gap:.9rem;
+  background:var(--cream2);border:1.5px solid var(--cream3);
+  border-radius:14px;padding:.9rem 1rem;
+  transition:border-color .15s,background .15s;min-height:70px;
+}
+.dose-item.done{background:var(--teal-pale);border-color:#bfe0da}
+.dose-item.overdue{background:#f9ede5;border-color:#e8c5b2}
+
+/* Custom circular checkbox */
+.dose-cb-wrap{position:relative;width:32px;height:32px;min-width:32px;flex-shrink:0}
+.dose-cb{position:absolute;opacity:0;width:100%;height:100%;cursor:pointer;margin:0;z-index:1}
+.dose-cb-box{
+  width:32px;height:32px;border-radius:50%;
+  border:2px solid var(--cream3);background:var(--cream);
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s,border-color .15s;pointer-events:none;
+}
+.dose-cb:checked~.dose-cb-box{background:var(--teal);border-color:var(--teal)}
+.dose-cb:checked~.dose-cb-box::after{
+  content:'';display:block;width:8px;height:13px;
+  border:2.5px solid #fff;border-top:none;border-left:none;
+  transform:rotate(42deg) translate(-1px,-2px);
+}
+.dose-item.overdue .dose-cb-box{border-color:var(--amber)}
+
+.dose-body{flex:1;min-width:0}
+.dose-name{font-size:1rem;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dose-item.done .dose-name{text-decoration:line-through;color:#aabbc6;text-decoration-color:#bfd5d0}
+.dose-time{font-size:.82rem;font-weight:500;color:#8a9bb5;margin-top:.18rem}
+.dose-item.done .dose-time{color:#b8cdd8}
+.dose-item.overdue .dose-time{color:var(--amber);font-weight:700}
+.dose-notes{font-size:.78rem;color:var(--teal2);margin-top:.2rem;font-style:italic}
+.dose-tick-time{font-size:.76rem;color:var(--safe);margin-top:.2rem;font-weight:600}
+.dose-item.done .dose-notes{display:none}
+.dose-time-badge{
+  flex-shrink:0;font-size:.78rem;font-weight:700;
+  color:var(--teal3);background:var(--teal-pale);
+  border-radius:8px;padding:.22rem .55rem;white-space:nowrap;
+}
+.dose-item.done .dose-time-badge{background:transparent;color:#aabbc6}
+.dose-item.overdue .dose-time-badge{background:var(--amber-pale);color:var(--amber)}
+
+/* Med list */
+.med-list{list-style:none;display:flex;flex-direction:column}
+.med-item{display:flex;align-items:flex-start;gap:.85rem;padding:1rem 1.25rem;border-bottom:1px solid var(--cream2)}
+.med-item:last-child{border-bottom:none}
+.med-icon{width:42px;height:42px;min-width:42px;border-radius:12px;background:var(--teal-pale);display:flex;align-items:center;justify-content:center;margin-top:.1rem}
+.med-icon svg{width:20px;height:20px}
+.med-detail{flex:1;min-width:0}
+.med-name{font-size:.97rem;font-weight:700;color:var(--navy)}
+.med-info{font-size:.8rem;color:#8a9bb5;margin-top:.2rem;font-weight:500}
+.med-note-tag{display:inline-block;margin-top:.4rem;background:var(--teal-pale);color:var(--teal3);border-radius:20px;padding:.15rem .65rem;font-size:.72rem;font-weight:600}
+.btn-remove{background:none;border:1.5px solid var(--cream3);border-radius:7px;padding:.25rem .65rem;font-size:.75rem;font-weight:600;color:var(--rose2);cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:.5rem;transition:background .12s,border-color .12s}
+.btn-remove:hover{background:var(--rose-pale);border-color:#f5c8c8}
+
+/* Form controls */
+label{display:block;font-size:.75rem;font-weight:700;color:#8a9bb5;text-transform:uppercase;letter-spacing:.08em;margin-top:.95rem;margin-bottom:.35rem}
+input[type=text],input[type=time],textarea{
+  width:100%;padding:.72rem 1rem;font-size:.97rem;font-family:'DM Sans',sans-serif;font-weight:400;
+  border:1.5px solid var(--cream3);border-radius:var(--r-sm);
+  background:var(--cream);color:var(--navy);
+  transition:border-color .15s,background .15s;-webkit-appearance:none;
+}
+input:focus,textarea:focus{outline:none;border-color:var(--teal);background:var(--cream);box-shadow:0 0 0 3px rgba(58,158,141,.1)}
+textarea{resize:vertical;min-height:80px}
+.time-row{display:flex;gap:.5rem;align-items:center;margin-bottom:.35rem}
+.time-row input{flex:1}
+.time-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.45rem}
+.time-tag{background:var(--teal-pale);color:var(--teal3);border:1.5px solid rgba(58,158,141,.3);border-radius:20px;padding:.22rem .75rem;font-size:.8rem;font-weight:600;display:flex;align-items:center;gap:.4rem}
+.time-tag button{background:none;border:none;cursor:pointer;color:var(--teal2);font-size:.9rem;padding:0;line-height:1;opacity:.6;transition:opacity .12s}
+.time-tag button:hover{opacity:1}
+
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.45rem;
+  padding:.75rem 1.3rem;font-size:.95rem;font-family:'DM Sans',sans-serif;font-weight:600;
+  border-radius:var(--r-btn);border:none;cursor:pointer;min-height:50px;
+  transition:background .15s,opacity .15s,transform .1s;letter-spacing:.01em;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn:active{transform:scale(.97)}.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn-primary{background:var(--teal);color:#fff}.btn-primary:hover:not(:disabled){background:var(--teal2)}
+.btn-outline{background:transparent;color:var(--teal);border:1.5px solid var(--teal)}.btn-outline:hover{background:var(--teal-pale)}
+.btn-navy{background:var(--navy);color:#fff}.btn-navy:hover:not(:disabled){background:var(--navy2)}
+.btn-rose{background:var(--navy);color:#fff}.btn-rose:hover:not(:disabled){background:var(--navy2)}
+.btn-rose.danger{background:var(--rose);color:#fff}.btn-rose.danger:hover:not(:disabled){background:var(--rose2)}
+.btn-full{width:100%;margin-top:1rem}
+.btn-sm{padding:.38rem .85rem;font-size:.82rem;min-height:38px}
+
+/* Interaction results */
+.summary-box{background:var(--teal-pale);border:1.5px solid rgba(58,158,141,.25);border-radius:var(--r-sm);padding:.9rem 1.1rem;font-size:.92rem;font-weight:600;color:var(--teal3);margin-bottom:.8rem;line-height:1.55}
+.meta-bar{display:flex;flex-wrap:wrap;gap:.5rem .9rem;font-size:.75rem;font-weight:600;color:var(--navy2);background:var(--navy-pale);border-radius:var(--r-sm);padding:.6rem 1rem;margin-bottom:.75rem;align-items:center}
+.meta-source{color:var(--teal2);font-weight:500;font-style:italic}
+.mg-badge{font-size:.65rem;font-weight:700;background:rgba(184,114,34,.15);color:var(--amber);border-radius:20px;padding:.1rem .5rem;margin-left:.3rem;text-transform:uppercase;letter-spacing:.05em}
+.result-card{border-radius:var(--r-sm);padding:.95rem 1.1rem;margin-bottom:.65rem;border-left:4px solid;background:var(--cream2);box-shadow:var(--shadow-sm)}
+.result-card.safe{border-color:var(--safe)}.result-card.caution{border-color:var(--amber)}.result-card.contraindicated{border-color:var(--rose)}
+.result-drug{font-weight:700;font-size:.97rem;display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;color:var(--navy)}
+.result-status{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;padding:.15rem .6rem;border-radius:20px}
+.status-safe{background:var(--safe-pale);color:var(--safe)}.status-caution{background:var(--amber-pale);color:var(--amber)}.status-contraindicated{background:var(--rose-pale);color:var(--rose2)}
+.result-reason{font-size:.86rem;color:#4a5a6a;margin-top:.4rem;line-height:1.65}
+.result-resolved{font-size:.72rem;font-weight:500;color:#8a9bb5;margin-left:.25rem;font-style:italic}
+.ixn-list{margin-top:.65rem;border-top:1px solid var(--cream2);padding-top:.55rem;display:flex;flex-direction:column;gap:.45rem}
+.ixn-row{background:var(--cream3);border-radius:9px;padding:.55rem .8rem;font-size:.78rem}
+.ixn-with{color:var(--navy);margin:0 .3rem}.ixn-mech{font-size:.68rem;color:#8a9bb5;font-style:italic}
+.ixn-detail{margin-top:.3rem;color:#4a5a6a;line-height:1.55}.ixn-source{margin-top:.2rem;font-size:.65rem;color:#8a9bb5}
+.sev-badge{display:inline-block;font-size:.67rem;font-weight:700;border-radius:20px;padding:.1rem .48rem;text-transform:uppercase;letter-spacing:.04em}
+.sev-major{background:var(--rose-pale);color:var(--rose2)}.sev-moderate{background:var(--amber-pale);color:var(--amber)}.sev-minor{background:var(--teal-pale);color:var(--teal3)}.sev-none{background:var(--cream2);color:#8a9bb5}
+.disclaimer-box{background:var(--cream2);border:1px solid var(--cream3);border-radius:var(--r-sm);padding:.8rem 1rem;font-size:.78rem;color:#7a8faa;margin-top:.9rem;line-height:1.65}
+
+/* Empty state */
+.empty-state{text-align:center;padding:2.5rem 1rem;color:#9aabbf}
+.empty-state svg{display:block;margin:0 auto .7rem;width:44px;height:44px;opacity:.25}
+.empty-state p{font-size:.9rem;line-height:1.65}
+
+/* Toggle switch */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:.75rem 0;border-bottom:1px solid var(--cream2)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-label{font-size:.95rem;font-weight:600;color:var(--navy)}
+.toggle-sub{font-size:.78rem;color:#8a9bb5;margin-top:.15rem}
+.toggle-wrap{position:relative;width:48px;height:26px;flex-shrink:0}
+.toggle-wrap input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{position:absolute;inset:0;border-radius:13px;background:var(--cream3);cursor:pointer;transition:background .2s}
+.toggle-wrap input:checked~.toggle-track{background:var(--teal)}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s;pointer-events:none}
+.toggle-wrap input:checked~.toggle-track~.toggle-thumb{transform:translateX(22px)}
+
+/* Sound picker */
+.sound-grid{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;margin-top:.5rem}
+.sound-btn{display:flex;align-items:center;gap:.55rem;padding:.7rem .85rem;border:1.5px solid var(--cream3);border-radius:var(--r-sm);background:var(--cream);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.88rem;font-weight:600;color:var(--navy);transition:border-color .15s,background .15s;-webkit-tap-highlight-color:transparent}
+.sound-btn:hover{background:var(--teal-pale);border-color:var(--teal)}
+.sound-btn.selected{background:var(--teal-pale);border-color:var(--teal);color:var(--teal3)}
+.sound-btn .sound-icon{font-size:1.1rem;line-height:1}
+
+/* Settings */
+.settings-section{margin-bottom:1.2rem}
+.med-notif-row{display:flex;align-items:center;justify-content:space-between;padding:.6rem 1.25rem;border-bottom:1px solid var(--cream2)}
+.med-notif-row:last-child{border-bottom:none}
+.med-notif-name{font-size:.9rem;font-weight:600;color:var(--navy);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:.75rem}
+
+/* Spinner */
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .65s linear infinite}
+
+/* Responsive */
+@media(max-width:440px){
+  html{font-size:17px}
+  main{padding:1.1rem .9rem .8rem}
+  .dose-item{padding:.8rem .85rem}
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="header-inner">
+    <svg class="logo-mark" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M40 6C40 6 64 21 64 43C64 57 53 70 40 74C27 70 16 57 16 43C16 21 40 6 40 6Z" fill="#3a9e8d"/>
+      <rect x="34.5" y="24" width="11" height="28" rx="3" fill="white" opacity="0.92"/>
+      <rect x="26" y="32.5" width="28" height="11" rx="3" fill="white" opacity="0.92"/>
+      <path d="M32 46L38 53L50 36" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <line x1="40" y1="74" x2="40" y2="80" stroke="#3a9e8d" stroke-width="3.5" stroke-linecap="round"/>
+    </svg>
+    <div class="logo-text">
+      <span class="logo-name">Medtracker</span>
+      <span class="logo-tagline">Your gentle partner</span>
+    </div>
+  </div>
+</header>
+
+<!-- Bottom nav -->
+<nav>
+  <button class="active" data-tab="today">
+    <span class="nav-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="9 16 11 18 15 14"/>
+      </svg>
+    </span>
+    Today
+  </button>
+  <button data-tab="medications">
+    <span class="nav-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2a5 5 0 0 1 5 5v1H7V7a5 5 0 0 1 5-5z"/><rect x="4" y="8" width="16" height="13" rx="2"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="9.5" y1="14.5" x2="14.5" y2="14.5"/>
+      </svg>
+    </span>
+    Medications
+  </button>
+  <button data-tab="interactions">
+    <span class="nav-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+      </svg>
+    </span>
+    Interactions
+  </button>
+  <button data-tab="settings">
+    <span class="nav-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </span>
+    Settings
+  </button>
+</nav>
+
+<main>
+
+  <!-- TODAY -->
+  <section id="tab-today" class="tab-panel active">
+    <div id="notif-bar" class="banner warn" style="display:none">
+      <span class="banner-icon">🔔</span>
+      <div>
+        <strong>Enable reminders</strong> so alarms ring in the background.
+        <div style="margin-top:.45rem">
+          <button class="btn btn-outline btn-sm" id="notif-btn">Allow Notifications</button>
+        </div>
+      </div>
+    </div>
+    <div id="missed-banner" class="banner danger hidden">
+      <span class="banner-icon">⚠</span><span id="missed-text"></span>
+    </div>
+    <div class="today-meta">
+      <div class="today-date-label" id="today-date"></div>
+      <div class="dose-progress" id="dose-progress"></div>
+    </div>
+    <ul class="dose-list" id="dose-list">
+      <li class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        <p>No medications yet.<br>Add some in the Medications tab.</p>
+      </li>
+    </ul>
+  </section>
+
+  <!-- MEDICATIONS -->
+  <section id="tab-medications" class="tab-panel">
+    <div class="card">
+      <div class="section-head">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Medication
+      </div>
+      <label for="m-name">Medication name</label>
+      <input type="text" id="m-name" placeholder="e.g. Prednisone 5 mg"/>
+      <label for="m-dose">Dose</label>
+      <input type="text" id="m-dose" placeholder="e.g. 1 tablet"/>
+      <label for="m-notes">Notes (optional)</label>
+      <input type="text" id="m-notes" placeholder="e.g. Take with food"/>
+      <label>Scheduled times</label>
+      <div class="time-row">
+        <input type="time" id="m-time"/>
+        <button class="btn btn-outline btn-sm" id="add-time-btn">+ Add time</button>
+      </div>
+      <div class="time-tags" id="time-tags"></div>
+      <button class="btn btn-navy btn-full" id="save-med-btn">Save Medication</button>
+    </div>
+    <div class="card card-flush">
+      <div class="section-head" style="padding:1rem 1.25rem .75rem;margin-bottom:0;border-bottom:1px solid var(--cream2)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9l-6-6z"/><polyline points="9 3 9 9 15 9"/></svg>
+        My Medications
+      </div>
+      <ul class="med-list" id="med-list">
+        <li class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="8" x2="16" y2="8"/></svg>
+          <p>No medications saved yet.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- INTERACTIONS -->
+  <section id="tab-interactions" class="tab-panel">
+    <div class="card">
+      <div class="section-head">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Drug Interaction Checker
+      </div>
+      <p style="font-size:.88rem;color:#8a9bb5;margin-bottom:1rem;line-height:1.7">Enter any new medications, supplements or over-the-counter drugs to check their safety with Myasthenia Gravis.</p>
+      <label for="query-drugs">Drugs to check</label>
+      <textarea id="query-drugs" placeholder="e.g. Azithromycin, Magnesium supplement, Metoprolol&#10;(one per line or comma-separated)"></textarea>
+      <button class="btn btn-rose btn-full" id="check-btn">Check for Interactions</button>
+    </div>
+    <div id="interaction-result" style="display:none"></div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="tab-settings" class="tab-panel">
+    <h1 class="page-title">Settings</h1>
+
+    <div class="card settings-section">
+      <div class="section-head">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Notification Sound
+      </div>
+      <p style="font-size:.82rem;color:#8a9bb5;margin-bottom:.85rem;line-height:1.6">Tap a sound to preview it. This plays every time a dose reminder fires.</p>
+      <div class="sound-grid" id="sound-grid">
+        <button class="sound-btn selected" data-sound="chime"><span class="sound-icon">🔔</span> Gentle Chime</button>
+        <button class="sound-btn" data-sound="bell"><span class="sound-icon">🎵</span> Soft Bell</button>
+        <button class="sound-btn" data-sound="double"><span class="sound-icon">📳</span> Double Tone</button>
+        <button class="sound-btn" data-sound="beep"><span class="sound-icon">📢</span> Classic Beep</button>
+        <button class="sound-btn" data-sound="melody"><span class="sound-icon">🎶</span> Short Melody</button>
+        <button class="sound-btn" data-sound="urgent"><span class="sound-icon">⚠️</span> Urgent Pulse</button>
+      </div>
+    </div>
+
+    <div class="card card-flush settings-section">
+      <div class="section-head" style="padding:1rem 1.25rem .75rem;margin-bottom:0;border-bottom:1px solid var(--cream2)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9l-6-6z"/></svg>
+        Reminders Per Medication
+      </div>
+      <div id="notif-per-med">
+        <div class="empty-state" style="padding:1.5rem"><p>No medications added yet.</p></div>
+      </div>
+    </div>
+
+    <div class="card settings-section">
+      <div class="section-head">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/></svg>
+        System Notifications
+      </div>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-label">Background notifications</div>
+          <div class="toggle-sub" id="notif-system-sub">Allow alerts when the app is closed</div>
+        </div>
+        <label class="toggle-wrap">
+          <input type="checkbox" id="notif-system-toggle"/>
+          <div class="toggle-track"></div>
+          <div class="toggle-thumb"></div>
+        </label>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+// ── Storage ──────────────────────────────────────────────────────────────────
+const MEDS_KEY='mg_meds_v2',TRACK_KEY='mg_track_v2',SOUND_KEY='mg_sound_v1',NOTIF_KEY='mg_notif_v1';
+const DEFAULT_MEDS=[{id:'pyrid_default',name:'Pyridostigmine (Mestinon) 60 mg',dose:'1 tablet',notes:'Take on exact schedule — do not skip or delay',times:['07:00','11:00','15:00','19:00']}];
+function loadMeds(){try{const r=localStorage.getItem(MEDS_KEY);if(r===null){saveMeds(DEFAULT_MEDS);return DEFAULT_MEDS;}return JSON.parse(r)||[];}catch{return DEFAULT_MEDS;}}
+function saveMeds(m){localStorage.setItem(MEDS_KEY,JSON.stringify(m))}
+function todayStr(){return new Date().toISOString().slice(0,10)}
+function loadTracker(){try{const t=JSON.parse(localStorage.getItem(TRACK_KEY));if(t&&t.date===todayStr())return t}catch{}const f={date:todayStr(),doses:{}};localStorage.setItem(TRACK_KEY,JSON.stringify(f));return f;}
+function saveTracker(t){localStorage.setItem(TRACK_KEY,JSON.stringify(t))}
+function loadSoundPref(){return localStorage.getItem(SOUND_KEY)||'chime';}
+function saveSoundPref(s){localStorage.setItem(SOUND_KEY,s);}
+function loadNotifPrefs(){try{return JSON.parse(localStorage.getItem(NOTIF_KEY))||{};}catch{return {};}}
+function saveNotifPrefs(p){localStorage.setItem(NOTIF_KEY,JSON.stringify(p));}
+function isMedNotifEnabled(medId){return loadNotifPrefs()[medId]!==false;}
+
+// ── Tabs ─────────────────────────────────────────────────────────────────────
+document.querySelectorAll('nav button').forEach(b=>{
+  b.addEventListener('click',()=>{
+    const tab=b.dataset.tab;
+    document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x===b));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.toggle('active',p.id==='tab-'+tab));
+    if(tab==='settings')renderSettings();
+  });
+});
+
+// ── Notifications ─────────────────────────────────────────────────────────────
+const notifBar=document.getElementById('notif-bar'),notifBtn=document.getElementById('notif-btn');
+if('Notification'in window&&Notification.permission==='default')notifBar.style.display='flex';
+notifBtn?.addEventListener('click',async()=>{
+  const p=await Notification.requestPermission();
+  if(p==='granted'){notifBar.style.display='none';scheduleAll();}
+  else{notifBar.querySelector('strong').textContent="Notifications blocked — you'll see in-app reminders only";}
+});
+
+// ── Service Worker ────────────────────────────────────────────────────────────
+let swReg=null;
+if('serviceWorker'in navigator){
+  navigator.serviceWorker.register('/sw.js').then(r=>{swReg=r;}).catch(()=>{});
+  navigator.serviceWorker.addEventListener('message',e=>{
+    if(e.data?.type==='MARK_DONE'){const{medId,time}=e.data.payload||{};if(medId&&time)markDose(medId,time,true);}
+  });
+}
+
+// ── Sound engine ──────────────────────────────────────────────────────────────
+function playSound(name){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const sounds={
+      chime:()=>{[[523,0],[659,.18],[784,.36],[1047,.54]].forEach(([f,t])=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.connect(g);g.connect(ctx.destination);o.frequency.value=f;g.gain.setValueAtTime(0,ctx.currentTime+t);g.gain.linearRampToValueAtTime(0.22,ctx.currentTime+t+.04);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+t+.6);o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+.6);});},
+      bell:()=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.connect(g);g.connect(ctx.destination);o.frequency.value=880;g.gain.setValueAtTime(0.3,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+1.4);o.start();o.stop(ctx.currentTime+1.4);},
+      double:()=>{[[440,0],[440,.35]].forEach(([f,t])=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.connect(g);g.connect(ctx.destination);o.frequency.value=f;g.gain.setValueAtTime(0.25,ctx.currentTime+t);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+t+.28);o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+.28);});},
+      beep:()=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='square';o.connect(g);g.connect(ctx.destination);o.frequency.value=660;g.gain.setValueAtTime(0.15,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+.5);o.start();o.stop(ctx.currentTime+.5);},
+      melody:()=>{[[523,0],[659,.2],[784,.4],[659,.6],[784,.8]].forEach(([f,t])=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.connect(g);g.connect(ctx.destination);o.frequency.value=f;g.gain.setValueAtTime(0.2,ctx.currentTime+t);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+t+.18);o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+.18);});},
+      urgent:()=>{[0,.2,.4].forEach(t=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='sawtooth';o.connect(g);g.connect(ctx.destination);o.frequency.value=880;g.gain.setValueAtTime(0.18,ctx.currentTime+t);g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+t+.15);o.start(ctx.currentTime+t);o.stop(ctx.currentTime+t+.15);});}
+    };
+    (sounds[name]||sounds.chime)();
+  }catch{}
+}
+function playBeep(){playSound(loadSoundPref());}
+
+// ── Alarm scheduling ──────────────────────────────────────────────────────────
+const alarmIds=[];
+function clearAlarms(){alarmIds.forEach(clearTimeout);alarmIds.length=0;}
+function scheduleAll(){
+  clearAlarms();if(Notification.permission!=='granted')return;
+  const meds=loadMeds(),track=loadTracker(),now=Date.now();
+  meds.forEach(med=>{
+    if(!isMedNotifEnabled(med.id))return;
+    (med.times||[]).forEach(t=>{
+      const[h,m]=t.split(':').map(Number),due=new Date();due.setHours(h,m,0,0);
+      const key=`${med.id}_${t}`;
+      if(due.getTime()>now&&!track.doses[key])alarmIds.push(setTimeout(()=>fireAlarm(med,t),due.getTime()-now));
+    });
+  });
+}
+function fireAlarm(med,time){
+  playBeep();
+  if(Notification.permission==='granted'&&swReg)swReg.showNotification(`Time for ${med.name}`,{body:`${med.dose}${med.notes?' · '+med.notes:''}`,requireInteraction:true,data:{medId:med.id,time,name:med.name,dose:med.dose},actions:[{action:'done',title:'Taken'},{action:'snooze',title:'Snooze 10 min'}]});
+  renderToday();
+}
+
+// ── Today tab ─────────────────────────────────────────────────────────────────
+function renderToday(){
+  const meds=loadMeds(),track=loadTracker(),now=new Date();
+  const list=document.getElementById('dose-list'),missed=document.getElementById('missed-banner'),missedTxt=document.getElementById('missed-text'),progress=document.getElementById('dose-progress');
+  document.getElementById('today-date').textContent=now.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+  if(!meds.length){list.innerHTML='<li class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="8" y1="12" x2="16" y2="12"/></svg><p>No medications yet.<br>Add some in the Medications tab.</p></li>';missed.classList.add('hidden');if(progress)progress.textContent='';return;}
+  const items=[];
+  meds.forEach(med=>{(med.times||[]).forEach(t=>{const[h,m]=t.split(':').map(Number),due=new Date();due.setHours(h,m,0,0);const key=`${med.id}_${t}`;items.push({med,time:t,due,key,done:!!track.doses[key],tickedAt:track.doses[key]});});});
+  items.sort((a,b)=>a.due-b.due);
+  let missedCount=0,doneCount=0;
+  list.innerHTML='';
+  items.forEach(({med,time,due,key,done,tickedAt})=>{
+    const overdue=due<now&&!done;
+    if(overdue)missedCount++;
+    if(done)doneCount++;
+    const li=document.createElement('li');li.className='dose-item'+(done?' done':overdue?' overdue':'');
+    const tickInfo=done&&tickedAt?`<div class="dose-tick-time">Taken at ${new Date(tickedAt).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}</div>`:'';
+    const notesHtml=med.notes&&!done?`<div class="dose-notes">${med.notes}</div>`:'';
+    const badgeClass=done?'done':overdue?'overdue':'';
+    li.innerHTML=`<div class="dose-cb-wrap"><input class="dose-cb" type="checkbox" id="${key}" ${done?'checked':''} aria-label="Mark ${med.name} at ${time} as taken"/><div class="dose-cb-box"></div></div><div class="dose-body"><div class="dose-name">${med.name} — ${med.dose}</div><div class="dose-time">${overdue?'Missed · ':''}${time}</div>${notesHtml}${tickInfo}</div><div class="dose-time-badge">${time}</div>`;
+    li.querySelector('.dose-cb').addEventListener('change',e=>markDose(med.id,time,e.target.checked));
+    list.appendChild(li);
+  });
+  if(progress)progress.textContent=`${doneCount}/${items.length} done`;
+  if(missedCount>0){missedTxt.textContent=`You have ${missedCount} missed dose${missedCount>1?'s':''} today. Please review below.`;missed.classList.remove('hidden');}else missed.classList.add('hidden');
+}
+function markDose(medId,time,done){
+  const t=loadTracker(),key=`${medId}_${time}`;
+  if(done)t.doses[key]=Date.now();else delete t.doses[key];
+  saveTracker(t);renderToday();
+}
+
+// ── Medications tab ───────────────────────────────────────────────────────────
+let pendingTimes=[];
+document.getElementById('add-time-btn')?.addEventListener('click',()=>{
+  const v=document.getElementById('m-time').value;
+  if(!v||pendingTimes.includes(v))return;
+  pendingTimes.push(v);pendingTimes.sort();renderTimeTags();document.getElementById('m-time').value='';
+});
+function renderTimeTags(){
+  const c=document.getElementById('time-tags');c.innerHTML='';
+  pendingTimes.forEach(t=>{const d=document.createElement('div');d.className='time-tag';d.innerHTML=`${t} <button aria-label="Remove ${t}">✕</button>`;d.querySelector('button').addEventListener('click',()=>{pendingTimes=pendingTimes.filter(x=>x!==t);renderTimeTags();});c.appendChild(d);});
+}
+document.getElementById('save-med-btn')?.addEventListener('click',()=>{
+  const name=document.getElementById('m-name').value.trim(),dose=document.getElementById('m-dose').value.trim(),notes=document.getElementById('m-notes').value.trim();
+  if(!name||!dose){alert('Please enter a name and dose.');return;}
+  if(!pendingTimes.length){alert('Please add at least one scheduled time.');return;}
+  const meds=loadMeds();meds.push({id:Date.now().toString(36),name,dose,notes,times:[...pendingTimes]});saveMeds(meds);
+  ['m-name','m-dose','m-notes'].forEach(id=>document.getElementById(id).value='');pendingTimes=[];renderTimeTags();
+  renderMedList();renderToday();scheduleAll();renderSettings();
+  // Auto-check: run interaction check against databases when a new med is saved
+  autoCheckNewMed(name);
+});
+function renderMedList(){
+  const meds=loadMeds(),list=document.getElementById('med-list');
+  if(!meds.length){list.innerHTML='<li class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="8" x2="16" y2="8"/></svg><p>No medications saved yet.</p></li>';return;}
+  list.innerHTML='';
+  meds.forEach(med=>{
+    const li=document.createElement('li');li.className='med-item';
+    const noteTag=med.notes?`<span class="med-note-tag">${med.notes}</span>`:'';
+    li.innerHTML=`<div class="med-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#3a9e8d" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="4"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div><div class="med-detail"><div class="med-name">${med.name}</div><div class="med-info">${med.dose} · ${med.times.join(', ')}</div>${noteTag}<button class="btn-remove" data-id="${med.id}">Remove</button></div>`;
+    li.querySelector('.btn-remove').addEventListener('click',()=>{if(confirm(`Remove ${med.name}?`)){saveMeds(loadMeds().filter(m=>m.id!==med.id));renderMedList();renderToday();scheduleAll();renderSettings();}});
+    list.appendChild(li);
+  });
+}
+
+// ── Interaction checker ───────────────────────────────────────────────────────
+const STATUS_ICON={safe:'✓',caution:'!',contraindicated:'✗'},STATUS_LABEL={safe:'Safe',caution:'Caution',contraindicated:'Avoid'};
+document.getElementById('check-btn')?.addEventListener('click',async()=>{
+  const raw=document.getElementById('query-drugs').value.trim();
+  if(!raw){alert('Please enter at least one drug to check.');return;}
+  const queryDrugs=raw.split(/[,\n]+/).map(s=>s.trim()).filter(Boolean);
+  const patientMedications=loadMeds().map(m=>m.name);
+  const btn=document.getElementById('check-btn'),resultDiv=document.getElementById('interaction-result');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span> Checking…';
+  resultDiv.style.display='none';resultDiv.innerHTML='';
+  try{
+    const res=await fetch('/api/check-interactions',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({patientMedications,queryDrugs})});
+    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e.error||`Server error ${res.status}`);}
+    renderInteractionResult(await res.json());
+  }catch(err){resultDiv.innerHTML=`<div class="banner danger"><span class="banner-icon">✗</span>${err.message}</div>`;resultDiv.style.display='block';}
+  finally{btn.disabled=false;btn.innerHTML='Check for Interactions';btn.classList.add('danger');}
+});
+function renderInteractionResult(data){
+  const div=document.getElementById('interaction-result');let html='';
+  if(data.summary)html+=`<div class="summary-box">${data.summary}</div>`;
+  if(data._meta)html+=`<div class="meta-bar"><span>📊 ${data._meta.drugsChecked} drug${data._meta.drugsChecked!==1?'s':''} analysed</span><span>🔗 ${data._meta.pairsFound} interaction pair${data._meta.pairsFound!==1?'s':''} found</span><span class="meta-source">Source: ${data._meta.source}</span></div>`;
+  (data.items||[]).forEach(item=>{
+    const s=item.status||'caution';
+    const resolvedTag=item.resolvedAs&&item.resolvedAs.toLowerCase()!==item.drug.toLowerCase()?`<span class="result-resolved">→ ${item.resolvedAs}</span>`:'';
+    const mgBadge=item.mgSpecific?`<span class="mg-badge">MG risk</span>`:'';
+    let ixnHtml='';
+    if(item.interactions&&item.interactions.length){
+      ixnHtml='<div class="ixn-list">';
+      item.interactions.forEach(ix=>{
+        const sev=ix.severity||'Unknown';
+        const sevClass={'Major':'sev-major','Moderate':'sev-moderate','Minor':'sev-minor'}[sev]||'sev-none';
+        ixnHtml+=`<div class="ixn-row"><span class="sev-badge ${sevClass}">${sev}</span><span class="ixn-with">with <strong>${ix.withDrug}</strong></span><span class="ixn-mech">${ix.mechanism||''}</span><div class="ixn-detail">${ix.detail||''}</div><div class="ixn-source">Source: ${ix.source||''}</div></div>`;
+      });
+      ixnHtml+='</div>';
+    }
+    html+=`<div class="result-card ${s}"><div class="result-drug">${STATUS_ICON[s]||'!'} ${item.drug}<span class="result-status status-${s}">${STATUS_LABEL[s]||s}</span>${resolvedTag}${mgBadge}</div><div class="result-reason">${item.overallReason||item.reason||''}</div>${ixnHtml}</div>`;
+  });
+  if(data.disclaimer)html+=`<div class="disclaimer-box">ℹ ${data.disclaimer}</div>`;
+  div.innerHTML=html;div.style.display='block';
+}
+
+// ── Settings tab ──────────────────────────────────────────────────────────────
+function renderSettings(){
+  const saved=loadSoundPref();
+  document.querySelectorAll('.sound-btn').forEach(btn=>{
+    btn.classList.toggle('selected',btn.dataset.sound===saved);
+    btn.onclick=()=>{saveSoundPref(btn.dataset.sound);document.querySelectorAll('.sound-btn').forEach(b=>b.classList.toggle('selected',b===btn));playSound(btn.dataset.sound);};
+  });
+  const meds=loadMeds(),container=document.getElementById('notif-per-med'),prefs=loadNotifPrefs();
+  if(!meds.length){container.innerHTML='<div class="empty-state" style="padding:1.5rem"><p>No medications added yet.</p></div>';return;}
+  container.innerHTML='';
+  meds.forEach(med=>{
+    const enabled=prefs[med.id]!==false;
+    const row=document.createElement('div');row.className='med-notif-row';
+    row.innerHTML=`<div class="med-notif-name">${med.name}</div><label class="toggle-wrap"><input type="checkbox" ${enabled?'checked':''} data-medid="${med.id}"/><div class="toggle-track"></div><div class="toggle-thumb"></div></label>`;
+    row.querySelector('input').addEventListener('change',e=>{const p=loadNotifPrefs();p[med.id]=e.target.checked;saveNotifPrefs(p);scheduleAll();});
+    container.appendChild(row);
+  });
+  const sysToggle=document.getElementById('notif-system-toggle'),sub=document.getElementById('notif-system-sub');
+  if('Notification'in window){
+    sysToggle.checked=Notification.permission==='granted';
+    if(Notification.permission==='denied'){sub.textContent='Blocked by browser — check site settings';sysToggle.disabled=true;}
+    else if(Notification.permission==='granted'){sub.textContent='Notifications are active';}
+    sysToggle.addEventListener('change',async()=>{
+      if(sysToggle.checked){const p=await Notification.requestPermission();sysToggle.checked=p==='granted';sub.textContent=p==='granted'?'Notifications are active':'Permission denied — check browser settings';if(p==='granted'){notifBar.style.display='none';scheduleAll();}}
+    });
+  }else{sub.textContent='Not supported in this browser';sysToggle.disabled=true;}
+}
+
+// ── Midnight reset & init ─────────────────────────────────────────────────────
+function msTillMidnight(){const n=new Date(),m=new Date(n);m.setHours(24,0,0,0);return m-n;}
+setTimeout(()=>{loadTracker();renderToday();scheduleAll();},msTillMidnight());
+renderToday();renderMedList();scheduleAll();
+
+// ── Auto-check on medication save ────────────────────────────────────────────
+async function autoCheckNewMed(newMedName) {
+  const allMeds = loadMeds().map(m => m.name);
+  if (allMeds.length < 2) return; // Nothing to check against yet
+
+  const banner = document.createElement('div');
+  banner.className = 'bn info';
+  banner.innerHTML = '<span>🔍</span><span>Checking <strong>' + newMedName + '</strong> against your current medications…</span>';
+
+  const todayTab = document.getElementById('tab-today');
+  const existingBanner = document.getElementById('auto-check-banner');
+  if (existingBanner) existingBanner.remove();
+  banner.id = 'auto-check-banner';
+  todayTab.insertBefore(banner, todayTab.firstChild);
+
+  try {
+    const res = await fetch('/api/check-interactions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ patientMedications: allMeds, queryDrugs: [] }),
+    });
+    if (!res.ok) throw new Error('Check failed');
+    const data = await res.json();
+
+    const newMedResult = data.items?.find(i =>
+      i.drug?.toLowerCase() === newMedName.toLowerCase() ||
+      i.resolvedAs?.toLowerCase() === newMedName.toLowerCase()
+    );
+
+    if (!newMedResult) { banner.remove(); return; }
+
+    const hasIssue = newMedResult.status === 'contraindicated' || newMedResult.status === 'caution';
+    if (hasIssue) {
+      const sevClass = newMedResult.status === 'contraindicated' ? 'danger' : 'warn';
+      const icon     = newMedResult.status === 'contraindicated' ? '🚫' : '⚠';
+      const msg      = newMedResult.overallReason || newMedResult.reason || 'Potential interaction detected.';
+      banner.className = 'bn ' + sevClass;
+      banner.innerHTML = '<span>' + icon + '</span><div><strong>' + newMedName + ':</strong> ' + msg +
+        '<div style="margin-top:.4rem"><button class="btn bto bsm" onclick="document.querySelector('[data-tab=interactions]').click()">See full report →</button></div></div>';
+    } else {
+      banner.className = 'bn info';
+      banner.innerHTML = '<span>✓</span><span><strong>' + newMedName + '</strong> — no significant interactions found with your current medications.</span>';
+      setTimeout(() => banner.remove(), 5000);
+    }
+  } catch {
+    banner.remove();
+  }
+}
+</script>
+</body>
+</html>
