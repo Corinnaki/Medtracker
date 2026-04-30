@@ -1,18 +1,13 @@
 [build]
   publish = "public"
-  functions = "netlify/functions"
-
-[functions]
-  node_bundler = "esbuild"
+  command = "cd netlify/functions && npm install"
 
 [[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
+  from = "/api/check-interactions"
+  to   = "/.netlify/functions/check-interactions"
   status = 200
 
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
+[[redirects]]
+  from = "/*"
+  to   = "/index.html"
+  status = 200
