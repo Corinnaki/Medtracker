@@ -1,6 +1,9 @@
 [build]
   publish = "public"
-  command = "cd netlify/functions && npm install"
+  command = "echo 'No build step needed'"
+
+[functions]
+  node_bundler = "esbuild"
 
 [[redirects]]
   from = "/api/check-interactions"
