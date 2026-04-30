@@ -5,6 +5,9 @@
 [functions]
   node_bundler = "esbuild"
 
+[[plugins]]
+  package = "@netlify/plugin-functions-install-core"
+
 [[redirects]]
   from = "/api/check-interactions"
   to   = "/.netlify/functions/check-interactions"
