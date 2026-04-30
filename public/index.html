@@ -7,111 +7,61 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <title>MG MedTracker</title>
-  <link rel="manifest" href="/manifest.json">
   <style>
     :root {
-      --teal: #2d7d6b;
-      --teal-light: #e8f4f1;
-      --teal-mid: #4a9e8b;
-      --amber: #e07b39;
-      --amber-light: #fdf3ec;
-      --red: #c0392b;
-      --red-light: #fdecea;
-      --green: #27ae60;
-      --green-light: #eafaf1;
-      --text: #2c3e50;
-      --text-muted: #6b7280;
-      --bg: #f5f0e8;
-      --card: #ffffff;
-      --border: #ddd6c8;
-      --radius: 14px;
-      --shadow: 0 2px 12px rgba(0,0,0,0.08);
+      --teal: #2d7d6b; --teal-light: #e8f4f1; --teal-mid: #4a9e8b;
+      --amber: #e07b39; --amber-light: #fdf3ec;
+      --red: #c0392b; --red-light: #fdecea;
+      --green: #27ae60; --green-light: #eafaf1;
+      --text: #2c3e50; --text-muted: #6b7280;
+      --bg: #f5f0e8; --card: #ffffff; --border: #ddd6c8;
+      --radius: 14px; --shadow: 0 2px 12px rgba(0,0,0,0.08);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      font-size: 18px;
-      max-width: 480px;
-      margin: 0 auto;
-      min-height: 100vh;
-      padding-bottom: 80px;
+      background: var(--bg); color: var(--text); font-size: 18px;
+      max-width: 480px; margin: 0 auto; min-height: 100vh; padding-bottom: 80px;
     }
-
-    /* ── Header ── */
     header {
-      background: var(--teal);
-      color: #fff;
-      padding: 18px 20px 14px;
-      position: sticky; top: 0; z-index: 100;
+      background: var(--teal); color: #fff;
+      padding: 18px 20px 14px; position: sticky; top: 0; z-index: 100;
       box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     }
     header h1 { font-size: 22px; font-weight: 700; }
     header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
-
-    /* ── Bottom nav ── */
     nav {
       position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-      width: 100%; max-width: 480px;
-      background: var(--card);
-      border-top: 1px solid var(--border);
-      display: flex;
-      z-index: 100;
+      width: 100%; max-width: 480px; background: var(--card);
+      border-top: 1px solid var(--border); display: flex; z-index: 100;
     }
     nav button {
-      flex: 1; border: none; background: none;
-      padding: 10px 4px 12px;
-      font-size: 11px; font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
-      display: flex; flex-direction: column; align-items: center; gap: 3px;
-      transition: color .2s;
+      flex: 1; border: none; background: none; padding: 10px 4px 12px;
+      font-size: 11px; font-weight: 600; color: var(--text-muted); cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; gap: 3px; transition: color .2s;
     }
     nav button.active { color: var(--teal); }
     nav button span.icon { font-size: 22px; line-height: 1; }
-
-    /* ── Tabs ── */
     .tab { display: none; padding: 16px; }
     .tab.active { display: block; }
-
-    /* ── Cards ── */
     .card {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 16px;
-      margin-bottom: 12px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
+      background: var(--card); border-radius: var(--radius); padding: 16px;
+      margin-bottom: 12px; box-shadow: var(--shadow); border: 1px solid var(--border);
     }
-
-    /* ── Alarm banner ── */
     .alarm-banner {
-      border-radius: var(--radius);
-      padding: 14px 16px;
-      margin-bottom: 12px;
-      display: none;
-      align-items: center;
-      gap: 12px;
-      font-size: 16px;
-      font-weight: 600;
+      border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px;
+      display: none; align-items: center; gap: 12px; font-size: 16px; font-weight: 600;
     }
     .alarm-banner.show { display: flex; }
     .alarm-banner.danger { background: var(--red-light); color: var(--red); border: 1.5px solid var(--red); }
     .alarm-banner.warning { background: var(--amber-light); color: var(--amber); border: 1.5px solid var(--amber); }
     .alarm-banner.ok { background: var(--green-light); color: var(--green); border: 1.5px solid var(--green); }
     .alarm-banner .see-more {
-      margin-left: auto; white-space: nowrap;
-      background: none; border: 1.5px solid currentColor;
-      color: inherit; border-radius: 8px;
-      padding: 4px 10px; font-size: 13px; font-weight: 600;
-      cursor: pointer;
+      margin-left: auto; white-space: nowrap; background: none; border: 1.5px solid currentColor;
+      color: inherit; border-radius: 8px; padding: 4px 10px; font-size: 13px; font-weight: 600; cursor: pointer;
     }
-
-    /* ── Dose list ── */
     .dose-item {
-      display: flex; align-items: center; gap: 14px;
-      padding: 14px 0;
+      display: flex; align-items: center; gap: 14px; padding: 14px 0;
       border-bottom: 1px solid var(--border);
     }
     .dose-item:last-child { border-bottom: none; }
@@ -120,59 +70,41 @@
     .dose-name { font-size: 17px; font-weight: 600; }
     .dose-amount { font-size: 14px; color: var(--text-muted); }
     .dose-check {
-      width: 36px; height: 36px; border-radius: 50%;
-      border: 2.5px solid var(--border);
+      width: 36px; height: 36px; border-radius: 50%; border: 2.5px solid var(--border);
       background: none; cursor: pointer; font-size: 20px;
-      display: flex; align-items: center; justify-content: center;
-      transition: all .2s;
-      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; transition: all .2s; flex-shrink: 0;
     }
     .dose-check.taken { background: var(--teal); border-color: var(--teal); color: #fff; }
     .dose-check.missed { background: var(--red-light); border-color: var(--red); color: var(--red); }
-
-    /* ── Section headings ── */
     .section-head {
       font-size: 13px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: .6px; color: var(--text-muted);
-      margin: 18px 0 8px;
+      letter-spacing: .6px; color: var(--text-muted); margin: 18px 0 8px;
     }
-
-    /* ── Forms ── */
     label { display: block; font-size: 15px; font-weight: 600; margin-bottom: 5px; }
     input, select, textarea {
-      width: 100%; border: 1.5px solid var(--border);
-      border-radius: 10px; padding: 12px 14px;
-      font-size: 16px; color: var(--text);
-      background: var(--bg);
-      appearance: none; -webkit-appearance: none;
+      width: 100%; border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 12px 14px; font-size: 16px; color: var(--text);
+      background: var(--bg); appearance: none; -webkit-appearance: none;
     }
     input:focus, select:focus { outline: none; border-color: var(--teal); }
     .field { margin-bottom: 14px; }
     .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
-
-    /* ── Buttons ── */
     .btn {
-      display: block; width: 100%;
-      padding: 15px; border: none; border-radius: 12px;
-      font-size: 17px; font-weight: 700; cursor: pointer;
-      transition: opacity .2s, transform .1s;
+      display: block; width: 100%; padding: 15px; border: none; border-radius: 12px;
+      font-size: 17px; font-weight: 700; cursor: pointer; transition: opacity .2s, transform .1s;
     }
     .btn:active { transform: scale(.98); }
     .btn-primary { background: var(--teal); color: #fff; }
     .btn-danger { background: var(--red); color: #fff; }
     .btn-secondary {
-      background: none; border: 2px solid var(--border);
-      color: var(--text); width: auto; padding: 8px 16px;
-      border-radius: 8px; font-size: 14px; font-weight: 600;
+      background: none; border: 2px solid var(--border); color: var(--text);
+      width: auto; padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 600;
     }
     .btn:disabled { opacity: .5; pointer-events: none; }
-
-    /* ── Medication list ── */
     .med-card {
-      display: flex; align-items: flex-start; gap: 12px;
-      padding: 14px; background: var(--card);
-      border: 1px solid var(--border); border-radius: var(--radius);
-      margin-bottom: 10px; box-shadow: var(--shadow);
+      display: flex; align-items: flex-start; gap: 12px; padding: 14px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); margin-bottom: 10px; box-shadow: var(--shadow);
     }
     .med-icon { font-size: 28px; flex-shrink: 0; }
     .med-info { flex: 1; min-width: 0; }
@@ -189,24 +121,17 @@
       padding: 4px; border-radius: 6px; transition: background .2s;
     }
     .btn-icon:hover { background: var(--bg); }
-
-    /* ── Interaction results ── */
     .severity-badge {
-      display: inline-block; border-radius: 8px;
-      padding: 3px 10px; font-size: 13px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: .5px;
+      display: inline-block; border-radius: 8px; padding: 3px 10px;
+      font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px;
     }
     .severity-contraindicated { background: var(--red-light); color: var(--red); }
     .severity-caution { background: var(--amber-light); color: var(--amber); }
     .severity-monitor { background: #fef9c3; color: #92400e; }
     .severity-ok { background: var(--green-light); color: var(--green); }
-
     .interaction-item {
-      border-left: 4px solid var(--border);
-      padding: 10px 14px;
-      margin-bottom: 10px;
-      border-radius: 0 8px 8px 0;
-      background: var(--bg);
+      border-left: 4px solid var(--border); padding: 10px 14px;
+      margin-bottom: 10px; border-radius: 0 8px 8px 0; background: var(--bg);
     }
     .interaction-item.contraindicated { border-color: var(--red); }
     .interaction-item.caution { border-color: var(--amber); }
@@ -214,37 +139,23 @@
     .interaction-item .drugs { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
     .interaction-item .mech { font-size: 14px; color: var(--text-muted); margin-bottom: 4px; }
     .interaction-item .rec { font-size: 14px; font-weight: 600; color: var(--text); }
-
-    /* ── Loading spinner ── */
     .spinner {
       display: inline-block; width: 22px; height: 22px;
-      border: 3px solid rgba(255,255,255,.4);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
+      border: 3px solid rgba(255,255,255,.4); border-top-color: #fff;
+      border-radius: 50%; animation: spin .7s linear infinite;
       vertical-align: middle; margin-right: 8px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── Empty state ── */
-    .empty {
-      text-align: center; padding: 40px 20px; color: var(--text-muted);
-    }
+    .empty { text-align: center; padding: 40px 20px; color: var(--text-muted); }
     .empty .empty-icon { font-size: 48px; margin-bottom: 12px; }
     .empty p { font-size: 15px; }
-
-    /* ── Toast ── */
     #toast {
       position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
-      background: #1a2733; color: #fff;
-      padding: 12px 20px; border-radius: 10px;
-      font-size: 15px; font-weight: 600;
-      opacity: 0; transition: opacity .3s; pointer-events: none;
-      white-space: nowrap; z-index: 999;
+      background: #1a2733; color: #fff; padding: 12px 20px; border-radius: 10px;
+      font-size: 15px; font-weight: 600; opacity: 0; transition: opacity .3s;
+      pointer-events: none; white-space: nowrap; z-index: 999;
     }
     #toast.show { opacity: 1; }
-
-    /* ── Settings ── */
     .setting-row {
       display: flex; align-items: center; justify-content: space-between;
       padding: 14px 0; border-bottom: 1px solid var(--border);
@@ -253,9 +164,8 @@
     .setting-label { font-size: 16px; font-weight: 600; }
     .setting-sub { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
     .toggle {
-      width: 52px; height: 30px; border-radius: 15px;
-      background: var(--border); border: none; cursor: pointer;
-      position: relative; transition: background .2s; flex-shrink: 0;
+      width: 52px; height: 30px; border-radius: 15px; background: var(--border);
+      border: none; cursor: pointer; position: relative; transition: background .2s; flex-shrink: 0;
     }
     .toggle::after {
       content: ''; position: absolute; top: 3px; left: 3px;
@@ -264,10 +174,13 @@
     }
     .toggle.on { background: var(--teal); }
     .toggle.on::after { transform: translateX(22px); }
-
-    .resolved-list { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
-    .resolved-list span { display: inline-block; margin-right: 8px; }
+    .resolved-list { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
     .eu-badge { background: #e0e7ff; color: #3730a3; border-radius: 4px; padding: 1px 6px; font-size: 12px; }
+    .api-key-warning {
+      background: #fef9c3; border: 1.5px solid #f59e0b; border-radius: var(--radius);
+      padding: 14px 16px; margin-bottom: 12px; font-size: 14px; color: #78350f;
+    }
+    .api-key-warning strong { display: block; margin-bottom: 4px; font-size: 15px; }
   </style>
 </head>
 <body>
@@ -277,22 +190,20 @@
   <p id="header-date">Loading…</p>
 </header>
 
-<!-- ── Today tab ── -->
+<!-- Today tab -->
 <section class="tab active" id="tab-today">
   <div id="interaction-banner" class="alarm-banner">
     <span id="banner-icon"></span>
     <span id="banner-text"></span>
     <button class="see-more" onclick="showTab('interactions')">See report →</button>
   </div>
-
   <div class="section-head">Today's doses</div>
   <div class="card" id="today-list">
     <div class="empty">
-      <div class="empty-icon">📋</div>
+      <div class="empty-icon">💊</div>
       <p>No medications scheduled.<br>Add some in the Medications tab.</p>
     </div>
   </div>
-
   <div class="section-head">Progress</div>
   <div class="card" id="progress-card" style="display:none">
     <div style="display:flex;justify-content:space-between;margin-bottom:8px">
@@ -305,21 +216,17 @@
   </div>
 </section>
 
-<!-- ── Medications tab ── -->
+<!-- Medications tab -->
 <section class="tab" id="tab-medications">
   <div class="section-head">My medications</div>
   <div id="med-list"></div>
-
   <button class="btn btn-primary" onclick="showAddMed()">+ Add medication</button>
-
-  <!-- Add/Edit form -->
   <div id="add-med-form" style="display:none;margin-top:16px">
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
         <span style="font-size:17px;font-weight:700" id="form-title">Add medication</span>
         <button class="btn-icon" onclick="hideAddMed()">✕</button>
       </div>
-
       <div class="field">
         <label>Medication name *</label>
         <input id="med-name-input" type="text" placeholder="e.g. Mestinon, pyridostigmine" autocomplete="off">
@@ -342,56 +249,65 @@
           </select>
         </div>
       </div>
-
       <div class="field">
         <label>Alarm times</label>
         <div id="times-list"></div>
         <button class="btn-secondary" style="margin-top:8px" onclick="addTimeField()">+ Add time</button>
       </div>
-
       <div class="field">
         <label>Notes (optional)</label>
         <input id="med-notes-input" type="text" placeholder="e.g. Take with food">
       </div>
-
       <button class="btn btn-primary" id="save-med-btn" onclick="saveMedication()">Save medication</button>
     </div>
   </div>
 </section>
 
-<!-- ── Interactions tab ── -->
+<!-- Interactions tab -->
 <section class="tab" id="tab-interactions">
   <div class="section-head">Drug interaction check</div>
-
+  <div id="api-key-warning" class="api-key-warning" style="display:none">
+    <strong>⚠️ API key required</strong>
+    Go to the <strong>Settings</strong> tab and enter your Anthropic API key to use this feature.
+  </div>
   <div class="card" style="margin-bottom:12px">
     <p style="font-size:15px;color:var(--text-muted);margin-bottom:12px">
-      Checks all your medications for interactions using OpenFDA data and AI analysis, with special attention to Myasthenia Gravis risk.
+      Checks all your medications for interactions using AI analysis, with special attention to Myasthenia Gravis risks.
     </p>
     <button class="btn btn-primary" id="check-btn" onclick="runInteractionCheck()">
-      🔍 Check interactions
+      🔬 Check interactions
     </button>
   </div>
-
   <div id="interaction-results" style="display:none">
     <div id="overall-severity-card" class="card" style="margin-bottom:12px"></div>
-    <div id="resolved-meds-card" class="resolved-list" style="margin-bottom:8px"></div>
+    <div id="resolved-meds-card" class="resolved-list"></div>
     <div class="section-head">Interactions found</div>
     <div id="interactions-list"></div>
     <div id="mg-risks-card" style="display:none" class="card"></div>
   </div>
-
   <div id="interaction-empty" class="empty">
     <div class="empty-icon">🧪</div>
     <p>Run a check to see if your medications interact with each other.</p>
   </div>
-
   <p style="font-size:12px;color:var(--text-muted);margin-top:16px;text-align:center">
     ⚠️ For information only. Always consult your neurologist or pharmacist.
   </p>
 </section>
 
-<!-- ── Settings tab ── -->
+<!-- Settings tab -->
 <section class="tab" id="tab-settings">
+  <div class="section-head">AI Drug Check</div>
+  <div class="card">
+    <div class="field">
+      <label>Anthropic API Key</label>
+      <input id="api-key-input" type="password" placeholder="sk-ant-..." autocomplete="off"
+        oninput="saveApiKey()">
+      <p style="font-size:12px;color:var(--text-muted);margin-top:6px">
+        Stored only on this device. Get yours at <strong>console.anthropic.com</strong>
+      </p>
+    </div>
+  </div>
+
   <div class="section-head">Notifications</div>
   <div class="card">
     <div class="setting-row">
@@ -423,15 +339,15 @@
 
   <div class="section-head">About</div>
   <div class="card" style="font-size:14px;color:var(--text-muted)">
-    <p>MG MedTracker v1.0 — designed for Myasthenia Gravis patients.</p>
-    <p style="margin-top:8px">Drug interaction data from OpenFDA and RxNorm. AI analysis by Claude (Anthropic). Always consult your doctor.</p>
+    <p>MG MedTracker · designed for Myasthenia Gravis patients.</p>
+    <p style="margin-top:8px">AI analysis by Claude (Anthropic). Always consult your doctor.</p>
   </div>
 </section>
 
-<!-- ── Bottom nav ── -->
+<!-- Bottom nav -->
 <nav>
   <button class="active" id="nav-today" onclick="showTab('today')">
-    <span class="icon">📋</span>Today
+    <span class="icon">🏠</span>Today
   </button>
   <button id="nav-medications" onclick="showTab('medications')">
     <span class="icon">💊</span>Meds
@@ -447,34 +363,34 @@
 <div id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════════════════════════════════════════
-// STATE
-// ══════════════════════════════════════════════════════════════════════════════
-let state = {
-  medications: [],    // [{id, name, dose, frequency, times[], notes, emoji}]
-  doses: {},          // {"YYYY-MM-DD": {"medId_timeIndex": "taken"|"missed"}}
-  lastCheckResult: null,
-  notificationsEnabled: false,
+// ── EU brand → INN map ──────────────────────────────────────────────────────
+const EU_BRAND_MAP = {
+  mestinon: "pyridostigmine", "mestinon retard": "pyridostigmine",
+  imurel: "azathioprine", cellcept: "mycophenolate mofetil",
+  prograf: "tacrolimus", medrol: "methylprednisolone",
+  decortin: "prednisone", "decortin h": "prednisolone",
+  urbason: "methylprednisolone", sandimmun: "cyclosporine",
+  neoral: "cyclosporine", rituxan: "rituximab", mabthera: "rituximab",
+  soliris: "eculizumab", ultomiris: "ravulizumab",
+  vyvgart: "efgartigimod", rystiggo: "rozanolixizumab",
 };
 
-function save() {
-  localStorage.setItem("mg_state_v2", JSON.stringify(state));
-}
+// ── STATE ───────────────────────────────────────────────────────────────────
+let state = {
+  medications: [], doses: {}, lastCheckResult: null, notificationsEnabled: false,
+};
 
+function save() { localStorage.setItem("mg_state_v2", JSON.stringify(state)); }
 function load() {
-  try {
-    const raw = localStorage.getItem("mg_state_v2");
-    if (raw) state = { ...state, ...JSON.parse(raw) };
-  } catch {}
+  try { const r = localStorage.getItem("mg_state_v2"); if (r) state = { ...state, ...JSON.parse(r) }; } catch {}
 }
-
-function today() {
-  return new Date().toISOString().slice(0, 10);
+function getApiKey() { return localStorage.getItem("mg_api_key") || ""; }
+function saveApiKey() {
+  localStorage.setItem("mg_api_key", document.getElementById("api-key-input").value.trim());
 }
+function today() { return new Date().toISOString().slice(0, 10); }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// TABS
-// ══════════════════════════════════════════════════════════════════════════════
+// ── TABS ────────────────────────────────────────────────────────────────────
 function showTab(name) {
   document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
   document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
@@ -484,9 +400,7 @@ function showTab(name) {
   if (name === "medications") renderMedList();
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// TODAY
-// ══════════════════════════════════════════════════════════════════════════════
+// ── TODAY ───────────────────────────────────────────────────────────────────
 const DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
@@ -494,67 +408,47 @@ function renderToday() {
   const d = new Date();
   document.getElementById("header-date").textContent =
     `${DAYS[d.getDay()]}, ${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
-
   const dateKey = today();
   const todayDoses = state.doses[dateKey] || {};
-
-  // Build dose schedule
   const schedule = [];
   state.medications.forEach(med => {
-    (med.times || []).forEach((time, idx) => {
-      schedule.push({ med, time, key: `${med.id}_${idx}` });
-    });
+    (med.times || []).forEach((time, idx) => schedule.push({ med, time, key: `${med.id}_${idx}` }));
   });
-
-  // Sort by time
   schedule.sort((a, b) => a.time.localeCompare(b.time));
-
   const list = document.getElementById("today-list");
   if (!schedule.length) {
-    list.innerHTML = `<div class="empty">
-      <div class="empty-icon">📋</div>
-      <p>No medications scheduled.<br>Add some in the <strong>Meds</strong> tab.</p>
-    </div>`;
+    list.innerHTML = `<div class="empty"><div class="empty-icon">💊</div>
+      <p>No medications scheduled.<br>Add some in the <strong>Meds</strong> tab.</p></div>`;
     document.getElementById("progress-card").style.display = "none";
     return;
   }
-
   const takenCount = schedule.filter(s => todayDoses[s.key] === "taken").length;
   document.getElementById("progress-card").style.display = "block";
   document.getElementById("progress-text").textContent = `${takenCount} / ${schedule.length}`;
   document.getElementById("progress-bar").style.width = `${(takenCount / schedule.length) * 100}%`;
-
   list.innerHTML = schedule.map(({ med, time, key }) => {
     const status = todayDoses[key] || "";
     const isTaken = status === "taken";
-    const isMissed = status === "missed";
     return `<div class="dose-item">
       <span class="dose-time">${time}</span>
       <div class="dose-info">
         <div class="dose-name">${med.emoji || "💊"} ${med.name}</div>
         <div class="dose-amount">${med.dose || ""} ${med.notes ? "· " + med.notes : ""}</div>
       </div>
-      <button class="dose-check ${isTaken ? "taken" : isMissed ? "missed" : ""}"
-        onclick="toggleDose('${key}', '${dateKey}')" title="${isTaken ? "Taken ✓" : "Mark taken"}">
-        ${isTaken ? "✓" : isMissed ? "✗" : ""}
+      <button class="dose-check ${isTaken ? "taken" : ""}"
+        onclick="toggleDose('${key}', '${dateKey}')">
+        ${isTaken ? "✓" : ""}
       </button>
     </div>`;
   }).join("");
-
   renderBanner();
 }
 
 function toggleDose(key, dateKey) {
   if (!state.doses[dateKey]) state.doses[dateKey] = {};
-  const current = state.doses[dateKey][key];
-  if (current === "taken") {
-    delete state.doses[dateKey][key];
-  } else {
-    state.doses[dateKey][key] = "taken";
-    showToast("✓ Dose recorded");
-  }
-  save();
-  renderToday();
+  if (state.doses[dateKey][key] === "taken") delete state.doses[dateKey][key];
+  else { state.doses[dateKey][key] = "taken"; showToast("✓ Dose recorded"); }
+  save(); renderToday();
 }
 
 function renderBanner() {
@@ -566,20 +460,16 @@ function renderBanner() {
   banner.className = `alarm-banner show ${classes[r.severity] || "ok"}`;
   document.getElementById("banner-icon").textContent = icons[r.severity] || "✅";
   document.getElementById("banner-text").textContent = r.severity === "ok"
-    ? "No major interactions found" : r.summary?.slice(0, 80) + "…";
+    ? "No major interactions found" : (r.summary || "").slice(0, 80) + "…";
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// MEDICATIONS
-// ══════════════════════════════════════════════════════════════════════════════
+// ── MEDICATIONS ─────────────────────────────────────────────────────────────
 const MED_EMOJIS = ["💊","🔵","🟡","🔴","🟢","⚪","🟠","🟣"];
-
 function renderMedList() {
   const el = document.getElementById("med-list");
   if (!state.medications.length) {
-    el.innerHTML = `<div class="empty">
-      <div class="empty-icon">💊</div><p>No medications yet. Add your first one below.</p>
-    </div>`;
+    el.innerHTML = `<div class="empty"><div class="empty-icon">💊</div>
+      <p>No medications yet. Add your first one below.</p></div>`;
     return;
   }
   el.innerHTML = state.medications.map(med => `
@@ -589,24 +479,18 @@ function renderMedList() {
         <div class="med-name">${med.name}</div>
         <div class="med-detail">${[med.dose, med.frequency].filter(Boolean).join(" · ")}</div>
         ${med.notes ? `<div class="med-detail">${med.notes}</div>` : ""}
-        <div class="med-times">
-          ${(med.times || []).map(t => `<span class="med-time-badge">⏰ ${t}</span>`).join("")}
-        </div>
+        <div class="med-times">${(med.times || []).map(t => `<span class="med-time-badge">⏰ ${t}</span>`).join("")}</div>
       </div>
       <div class="med-actions">
-        <button class="btn-icon" onclick="editMed('${med.id}')" title="Edit">✏️</button>
-        <button class="btn-icon" onclick="deleteMed('${med.id}')" title="Delete">🗑️</button>
+        <button class="btn-icon" onclick="editMed('${med.id}')">✏️</button>
+        <button class="btn-icon" onclick="deleteMed('${med.id}')">🗑️</button>
       </div>
-    </div>
-  `).join("");
+    </div>`).join("");
 }
 
-let editingId = null;
-let timeCount = 0;
-
+let editingId = null, timeCount = 0;
 function showAddMed() {
-  editingId = null;
-  timeCount = 0;
+  editingId = null; timeCount = 0;
   document.getElementById("form-title").textContent = "Add medication";
   document.getElementById("med-name-input").value = "";
   document.getElementById("med-dose-input").value = "";
@@ -618,17 +502,11 @@ function showAddMed() {
   document.getElementById("med-name-input").focus();
   document.getElementById("add-med-form").scrollIntoView({ behavior: "smooth" });
 }
-
-function hideAddMed() {
-  document.getElementById("add-med-form").style.display = "none";
-  editingId = null;
-}
-
+function hideAddMed() { document.getElementById("add-med-form").style.display = "none"; editingId = null; }
 function editMed(id) {
   const med = state.medications.find(m => m.id === id);
   if (!med) return;
-  editingId = id;
-  timeCount = 0;
+  editingId = id; timeCount = 0;
   document.getElementById("form-title").textContent = "Edit medication";
   document.getElementById("med-name-input").value = med.name;
   document.getElementById("med-dose-input").value = med.dose || "";
@@ -640,36 +518,27 @@ function editMed(id) {
   document.getElementById("add-med-form").style.display = "block";
   document.getElementById("add-med-form").scrollIntoView({ behavior: "smooth" });
 }
-
 function addTimeField(value = "") {
   const id = `time-${timeCount++}`;
   const div = document.createElement("div");
   div.style.cssText = "display:flex;gap:8px;margin-bottom:8px;align-items:center";
-  div.innerHTML = `
-    <input type="time" id="${id}" value="${value}"
-      style="flex:1" oninput="scheduleAlarmsForInputs()">
-    <button type="button" class="btn-icon" onclick="this.parentElement.remove()" title="Remove">✕</button>
-  `;
+  div.innerHTML = `<input type="time" id="${id}" value="${value}" style="flex:1">
+    <button type="button" class="btn-icon" onclick="this.parentElement.remove()">✕</button>`;
   document.getElementById("times-list").appendChild(div);
 }
-
 function saveMedication() {
   const name = document.getElementById("med-name-input").value.trim();
   if (!name) { showToast("⚠️ Please enter a medication name"); return; }
-
   const times = Array.from(document.querySelectorAll("#times-list input[type=time]"))
     .map(i => i.value).filter(Boolean);
-
   const med = {
-    id: editingId || Date.now().toString(),
-    name,
+    id: editingId || Date.now().toString(), name,
     dose: document.getElementById("med-dose-input").value.trim(),
     frequency: document.getElementById("med-freq-input").value,
     notes: document.getElementById("med-notes-input").value.trim(),
     times,
     emoji: MED_EMOJIS[state.medications.length % MED_EMOJIS.length],
   };
-
   if (editingId) {
     const idx = state.medications.findIndex(m => m.id === editingId);
     med.emoji = state.medications[idx].emoji;
@@ -677,33 +546,95 @@ function saveMedication() {
   } else {
     state.medications.push(med);
   }
-
-  save();
-  hideAddMed();
-  renderMedList();
-  scheduleAlarms();
+  save(); hideAddMed(); renderMedList(); scheduleAlarms();
   showToast(editingId ? "✓ Medication updated" : "✓ Medication added");
-
-  // Auto-run interaction check when meds change
   if (state.medications.length >= 2) autoCheck();
 }
-
 function deleteMed(id) {
   if (!confirm("Remove this medication?")) return;
   state.medications = state.medications.filter(m => m.id !== id);
-  save();
-  renderMedList();
-  showToast("Medication removed");
+  save(); renderMedList(); showToast("Medication removed");
   if (state.medications.length >= 2) autoCheck();
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// INTERACTIONS
-// ══════════════════════════════════════════════════════════════════════════════
+// ── INTERACTIONS (direct Anthropic API call) ─────────────────────────────────
+const SYSTEM_PROMPT = `You are a clinical pharmacist reviewing a Myasthenia Gravis (MG) patient's medication list.
+
+Flag drugs that worsen NMJ transmission: aminoglycosides, fluoroquinolones, macrolides, beta-blockers, calcium-channel blockers, magnesium, neuromuscular blockers, chloroquine/hydroxychloroquine, d-penicillamine, statins (high dose), colistin, quinine, procainamide.
+
+Respond ONLY with a JSON object, no prose, no markdown fences:
+{
+  "severity": "contraindicated" | "caution" | "monitor" | "ok",
+  "summary": "<2-sentence plain English summary for an elderly patient>",
+  "interactions": [
+    { "drugs": ["drug A","drug B"], "severity": "contraindicated"|"caution"|"monitor", "mechanism": "<brief>", "recommendation": "<action>" }
+  ],
+  "mgSpecificRisks": ["<risk 1>","<risk 2>"],
+  "resolvedMedications": [
+    { "original": "<name as entered>", "resolved": "<INN name>", "euMapped": true|false }
+  ]
+}`;
+
+function resolveName(name) {
+  const lower = name.trim().toLowerCase();
+  const mapped = EU_BRAND_MAP[lower];
+  return { original: name, resolved: mapped || name, euMapped: !!mapped };
+}
+
+async function callClaude(medications) {
+  const apiKey = getApiKey();
+  if (!apiKey) throw new Error("NO_API_KEY");
+
+  const resolved = medications.map(m => resolveName(m.name));
+  const medList = medications.map((m, i) =>
+    `${i+1}. ${resolved[i].euMapped ? resolved[i].original + " (→ " + resolved[i].resolved + ")" : m.name}` +
+    (m.dose ? " " + m.dose : "") + (m.frequency ? " " + m.frequency : "")
+  ).join("\n");
+
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true",
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1500,
+      system: SYSTEM_PROMPT,
+      messages: [{ role: "user", content: `Patient has Myasthenia Gravis. Medications:\n\n${medList}` }],
+    }),
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.error?.message || `HTTP ${res.status}`);
+  }
+
+  const data = await res.json();
+  const raw = data.content?.[0]?.text || "{}";
+  try {
+    const result = JSON.parse(raw.replace(/```json|```/g, "").trim());
+    // Attach resolved names if Claude didn't include them
+    if (!result.resolvedMedications) result.resolvedMedications = resolved;
+    return result;
+  } catch {
+    return { severity: "ok", summary: raw, interactions: [], mgSpecificRisks: [], resolvedMedications: resolved };
+  }
+}
+
 async function runInteractionCheck() {
-  if (state.medications.length < 2) {
-    showToast("⚠️ Add at least 2 medications first");
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    document.getElementById("api-key-warning").style.display = "block";
+    showToast("⚠️ Enter your API key in Settings first");
     return;
+  }
+  document.getElementById("api-key-warning").style.display = "none";
+
+  if (state.medications.length < 2) {
+    showToast("⚠️ Add at least 2 medications first"); return;
   }
   const btn = document.getElementById("check-btn");
   btn.innerHTML = '<span class="spinner"></span>Checking…';
@@ -712,74 +643,55 @@ async function runInteractionCheck() {
   document.getElementById("interaction-empty").style.display = "none";
 
   try {
-    const res = await fetch("/api/check-interactions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ medications: state.medications.map(m => ({ name: m.name, dose: m.dose, frequency: m.frequency })) }),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    const data = await callClaude(state.medications);
     state.lastCheckResult = data;
     save();
     renderInteractionResults(data);
     renderBanner();
   } catch (err) {
-    showToast("❌ Check failed: " + err.message);
+    if (err.message === "NO_API_KEY") {
+      document.getElementById("api-key-warning").style.display = "block";
+      showToast("⚠️ Enter your API key in Settings first");
+    } else {
+      showToast("❌ Check failed: " + err.message);
+    }
     document.getElementById("interaction-empty").style.display = "block";
   } finally {
-    btn.innerHTML = "🔍 Check interactions";
+    btn.innerHTML = "🔬 Check interactions";
     btn.disabled = false;
   }
 }
 
 async function autoCheck() {
+  if (!getApiKey() || state.medications.length < 2) return;
   try {
-    const res = await fetch("/api/check-interactions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ medications: state.medications.map(m => ({ name: m.name, dose: m.dose, frequency: m.frequency })) }),
-    });
-    if (!res.ok) return;
-    const data = await res.json();
+    const data = await callClaude(state.medications);
     state.lastCheckResult = data;
-    save();
-    renderBanner();
-    if (data.severity !== "ok") {
-      showToast(`${data.severity === "contraindicated" ? "🚫" : "⚠️"} Interaction detected — check the Check tab`);
-    }
+    save(); renderBanner();
+    if (data.severity !== "ok") showToast(`${data.severity === "contraindicated" ? "🚫" : "⚠️"} Interaction detected — check the Check tab`);
   } catch {}
 }
 
 function renderInteractionResults(data) {
-  const severityColors = {
-    contraindicated: "#c0392b", caution: "#e07b39", monitor: "#92400e", ok: "#27ae60"
-  };
+  const severityColors = { contraindicated: "#c0392b", caution: "#e07b39", monitor: "#92400e", ok: "#27ae60" };
   const color = severityColors[data.severity] || "#27ae60";
-
   document.getElementById("overall-severity-card").innerHTML = `
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
       <span class="severity-badge severity-${data.severity}">${data.severity}</span>
       <span style="font-size:15px;font-weight:700;color:${color}">Overall assessment</span>
     </div>
-    <p style="font-size:16px;line-height:1.5">${data.summary || "No issues detected."}</p>
-  `;
+    <p style="font-size:16px;line-height:1.5">${data.summary || "No issues detected."}</p>`;
 
-  // Resolved medication names
   if (data.resolvedMedications?.length) {
-    const resolvedEl = document.getElementById("resolved-meds-card");
-    resolvedEl.innerHTML = "🔍 Resolved: " + data.resolvedMedications.map(m =>
-      m.euMapped
-        ? `${m.original} <span class="eu-badge">→ ${m.resolved}</span>`
-        : m.resolved !== m.original
-          ? `${m.original} <span class="eu-badge">${m.resolved}</span>`
-          : m.original
-    ).join(" · ");
+    document.getElementById("resolved-meds-card").innerHTML = "💊 Resolved: " +
+      data.resolvedMedications.map(m =>
+        m.euMapped ? `${m.original} <span class="eu-badge">→ ${m.resolved}</span>` : m.original
+      ).join(" · ");
   }
 
-  // Interaction items
   const interEl = document.getElementById("interactions-list");
   if (!data.interactions?.length) {
-    interEl.innerHTML = `<div class="card" style="color:var(--text-muted);text-align:center;padding:20px">No specific interactions identified ✓</div>`;
+    interEl.innerHTML = `<div class="card" style="color:var(--text-muted);text-align:center;padding:20px">No specific interactions identified ✅</div>`;
   } else {
     interEl.innerHTML = data.interactions.map(i => `
       <div class="interaction-item ${i.severity}">
@@ -789,18 +701,14 @@ function renderInteractionResults(data) {
         <div class="drugs">${i.drugs.join(" + ")}</div>
         <div class="mech">${i.mechanism}</div>
         <div class="rec">→ ${i.recommendation}</div>
-      </div>
-    `).join("");
+      </div>`).join("");
   }
 
-  // MG-specific risks
   const mgEl = document.getElementById("mg-risks-card");
   if (data.mgSpecificRisks?.length) {
     mgEl.style.display = "block";
-    mgEl.innerHTML = `
-      <div class="section-head" style="margin-top:0;margin-bottom:10px">⚡ MG-specific warnings</div>
-      ${data.mgSpecificRisks.map(r => `<p style="margin-bottom:6px;font-size:15px">• ${r}</p>`).join("")}
-    `;
+    mgEl.innerHTML = `<div class="section-head" style="margin-top:0;margin-bottom:10px">⚡ MG-specific warnings</div>
+      ${data.mgSpecificRisks.map(r => `<p style="margin-bottom:6px;font-size:15px">• ${r}</p>`).join("")}`;
   } else {
     mgEl.style.display = "none";
   }
@@ -809,136 +717,78 @@ function renderInteractionResults(data) {
   document.getElementById("interaction-empty").style.display = "none";
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// NOTIFICATIONS
-// ══════════════════════════════════════════════════════════════════════════════
+// ── NOTIFICATIONS ────────────────────────────────────────────────────────────
 async function toggleNotifications() {
-  if (!("Notification" in window)) {
-    showToast("Notifications not supported in this browser");
-    return;
-  }
+  if (!("Notification" in window)) { showToast("Notifications not supported"); return; }
   if (state.notificationsEnabled) {
-    state.notificationsEnabled = false;
-    save();
-    updateNotifUI();
-    showToast("Notifications disabled");
-    return;
+    state.notificationsEnabled = false; save(); updateNotifUI(); showToast("Notifications disabled"); return;
   }
   const perm = await Notification.requestPermission();
   if (perm === "granted") {
-    state.notificationsEnabled = true;
-    save();
-    updateNotifUI();
-    scheduleAlarms();
+    state.notificationsEnabled = true; save(); updateNotifUI(); scheduleAlarms();
     showToast("✓ Notifications enabled!");
-    new Notification("MG MedTracker", { body: "Medication reminders are now active.", icon: "/manifest.json" });
-  } else {
-    showToast("Permission denied — check browser settings");
-  }
+  } else { showToast("Permission denied — check browser settings"); }
 }
-
 function updateNotifUI() {
   const toggle = document.getElementById("notif-toggle");
   const status = document.getElementById("notif-status");
   if (state.notificationsEnabled) {
-    toggle.classList.add("on");
-    status.textContent = "Active — reminders will fire at scheduled times";
+    toggle.classList.add("on"); status.textContent = "Active — reminders will fire at scheduled times";
   } else {
-    toggle.classList.remove("on");
-    status.textContent = "Tap to enable medication alarms";
+    toggle.classList.remove("on"); status.textContent = "Tap to enable medication alarms";
   }
 }
-
 function scheduleAlarms() {
   if (!state.notificationsEnabled) return;
-  if (!("serviceWorker" in navigator)) return;
-  navigator.serviceWorker.ready.then(reg => {
-    reg.active?.postMessage({ type: "SCHEDULE_CHECK" });
-  });
-  // Set interval to check alarms every minute
   if (window._alarmInterval) clearInterval(window._alarmInterval);
   window._alarmInterval = setInterval(checkAndFireAlarms, 60000);
   checkAndFireAlarms();
 }
-
-function scheduleAlarmsForInputs() {
-  // Called when time inputs change — debounced
-  clearTimeout(window._schedDebounce);
-  window._schedDebounce = setTimeout(scheduleAlarms, 500);
-}
-
 function checkAndFireAlarms() {
   if (!state.notificationsEnabled) return;
   const now = new Date();
   const hhmm = `${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
   const dateKey = today();
-
   state.medications.forEach(med => {
     (med.times || []).forEach((time, idx) => {
-      if (time === hhmm) {
-        const key = `${med.id}_${idx}`;
-        const taken = state.doses[dateKey]?.[key];
-        if (!taken) {
-          new Notification(`💊 Time for ${med.name}`, {
-            body: `${med.dose || ""} ${med.notes ? "· " + med.notes : ""}`.trim(),
-            tag: key,
-            renotify: false,
-          });
-        }
+      if (time === hhmm && !state.doses[dateKey]?.[`${med.id}_${idx}`]) {
+        new Notification(`💊 Time for ${med.name}`, {
+          body: `${med.dose || ""} ${med.notes ? "· " + med.notes : ""}`.trim(),
+          tag: `${med.id}_${idx}`, renotify: false,
+        });
       }
     });
   });
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// SETTINGS
-// ══════════════════════════════════════════════════════════════════════════════
+// ── SETTINGS ─────────────────────────────────────────────────────────────────
 function exportData() {
   const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `mg-medtracker-${today()}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-  showToast("✓ Data exported");
+  const a = document.createElement("a"); a.href = url;
+  a.download = `mg-medtracker-${today()}.json`; a.click();
+  URL.revokeObjectURL(url); showToast("✓ Data exported");
 }
-
 function clearData() {
   if (!confirm("Clear ALL data including medications and dose history?")) return;
   localStorage.removeItem("mg_state_v2");
   state = { medications: [], doses: {}, lastCheckResult: null, notificationsEnabled: false };
-  renderToday();
-  renderMedList();
-  updateNotifUI();
-  showToast("All data cleared");
+  renderToday(); renderMedList(); updateNotifUI(); showToast("All data cleared");
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// TOAST
-// ══════════════════════════════════════════════════════════════════════════════
+// ── TOAST ─────────────────────────────────────────────────────────────────────
 function showToast(msg) {
-  const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.classList.add("show");
+  const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show");
   clearTimeout(window._toastTimer);
   window._toastTimer = setTimeout(() => t.classList.remove("show"), 2500);
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// SERVICE WORKER + INIT
-// ══════════════════════════════════════════════════════════════════════════════
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("/sw.js").catch(() => {});
-  navigator.serviceWorker.addEventListener("message", e => {
-    if (e.data?.type === "CHECK_ALARMS") checkAndFireAlarms();
-  });
-}
-
+// ── INIT ──────────────────────────────────────────────────────────────────────
 load();
-renderToday();
-renderMedList();
-updateNotifUI();
+// Restore API key field
+const savedKey = getApiKey();
+if (savedKey) document.getElementById("api-key-input").value = savedKey;
+renderToday(); renderMedList(); updateNotifUI();
 if (state.notificationsEnabled) scheduleAlarms();
 if (state.lastCheckResult) renderBanner();
 </script>
