@@ -1,13 +1,6 @@
 {
   "name": "mg-medtracker",
   "version": "1.0.0",
-  "description": "Medtracker — Myasthenia Gravis medication PWA",
-  "scripts": {
-    "start": "echo 'No build step — static site'",
-    "build": "echo 'No build step - static site'",
-    "postinstall": "cd netlify/functions && npm install"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  }
+  "description": "PWA medication tracker for Myasthenia Gravis",
+  "private": true
 }
